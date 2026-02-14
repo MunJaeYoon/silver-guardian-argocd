@@ -2,10 +2,11 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: silver-guardian-backend
+  namespace: backend
   labels:
     app: backend
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
       app: backend
@@ -14,6 +15,67 @@ spec:
       labels:
         app: backend
     spec:
+      topologySpreadConstraints:
+        - maxSkew: 1
+          topologyKey: topology.kubernetes.io/zone
+          whenUnsatisfiable: ScheduleAnyway
+          labelSelector:
+            matchLabels:
+              app: backend
       containers:
       - name: backend
         image: 009946608368.dkr.ecr.ap-northeast-2.amazonaws.com/silver-guardian-backend:05bd053c90001cfd538c2f64667255dc96c8a8e7
+        ports:
+        - containerPort: 50051
+        startupProbe:
+          grpc:
+            port: 50051
+          initialDelaySeconds: 5
+          periodSeconds: 5
+          failureThreshold: 10
+        readinessProbe:
+          grpc:
+            port: 50051
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        livenessProbe:
+          grpc:
+            port: 50051
+          initialDelaySeconds: 15
+          periodSeconds: 20
+        env:
+        - name: DB_HOST
+          valueFrom:
+            configMapKeyRef:
+              name: silver-guardian-backend-config
+              key: DB_HOST
+        - name: DB_PORT
+          valueFrom:
+            configMapKeyRef:
+              name: silver-guardian-backend-config
+              key: DB_PORT
+        - name: DB_NAME
+          valueFrom:
+            configMapKeyRef:
+              name: silver-guardian-backend-config
+              key: DB_NAME
+        - name: DB_USER
+          valueFrom:
+            configMapKeyRef:
+              name: silver-guardian-backend-config
+              key: DB_USER
+        - name: DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: silver-guardian-backend-secrets
+              key: DB_PASSWORD
+        - name: GEMINI_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: silver-guardian-backend-secrets
+              key: GEMINI_API_KEY
+        - name: YOUTUBE_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: silver-guardian-backend-secrets
+              key: YOUTUBE_API_KEY
