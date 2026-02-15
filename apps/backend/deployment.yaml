@@ -24,7 +24,7 @@ spec:
               app: backend
       containers:
       - name: backend
-        image: 009946608368.dkr.ecr.ap-northeast-2.amazonaws.com/silver-guardian-backend:latest
+        image: 009946608368.dkr.ecr.ap-northeast-2.amazonaws.com/silver-guardian-backend:4215872ef828a7221919ef055cd2aa8aff24c89f
         imagePullPolicy: Always
         ports:
         - containerPort: 50051
