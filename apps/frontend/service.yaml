@@ -3,14 +3,20 @@ kind: Service
 metadata:
   name: frontend
   namespace: silver-guardian
-  labels:
-    app: frontend
+  annotations:
+    # NLB 사용
+    service.beta.kubernetes.io/aws-load-balancer-type: "nlb"
+    # 외부 노출
+    service.beta.kubernetes.io/aws-load-balancer-scheme: "internet-facing"
+    # Cross-Zone 로드밸런싱 활성화
+    service.beta.kubernetes.io/aws-load-balancer-cross-zone-load-balancing-enabled: "true"
 spec:
-  type: LoadBalancer  # NLB 자동 생성
+  type: LoadBalancer
   selector:
-    app: frontend
+    app: frontend  # Frontend Deployment의 label과 일치해야 함
   ports:
   - name: http
     port: 80
-    targetPort: 80
+    targetPort: 3000  # React 앱이 리스닝하는 포트 (실제 포트로 수정)
     protocol: TCP
+  sessionAffinity: None
