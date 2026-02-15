@@ -17,6 +17,6 @@ spec:
   ports:
   - name: http
     port: 80
-    targetPort: 3000  # React 앱이 리스닝하는 포트 (실제 포트로 수정)
+    targetPort: 80  # React 앱이 리스닝하는 포트 (실제 포트로 수정)
     protocol: TCP
   sessionAffinity: None
