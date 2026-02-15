@@ -24,58 +24,26 @@ spec:
               app: backend
       containers:
       - name: backend
-        image: 009946608368.dkr.ecr.ap-northeast-2.amazonaws.com/silver-guardian-backend:d244652045a116562962268b737a706b42539486
+        image: 009946608368.dkr.ecr.ap-northeast-2.amazonaws.com/silver-guardian-backend:latest
         ports:
         - containerPort: 50051
+        - containerPort: 8080
+        envFrom: 
+        - secretRef:
+            name: silver-guardian-backend-secrets
         startupProbe:
           grpc:
             port: 50051
-          initialDelaySeconds: 5
+          initialDelaySeconds: 10
           periodSeconds: 5
-          failureThreshold: 10
+          failureThreshold: 15
         readinessProbe:
           grpc:
             port: 50051
-          initialDelaySeconds: 5
+          initialDelaySeconds: 10
           periodSeconds: 10
         livenessProbe:
           grpc:
             port: 50051
-          initialDelaySeconds: 15
+          initialDelaySeconds: 20
           periodSeconds: 20
-        env:
-        - name: DB_HOST
-          valueFrom:
-            configMapKeyRef:
-              name: silver-guardian-backend-config
-              key: DB_HOST
-        - name: DB_PORT
-          valueFrom:
-            configMapKeyRef:
-              name: silver-guardian-backend-config
-              key: DB_PORT
-        - name: DB_NAME
-          valueFrom:
-            configMapKeyRef:
-              name: silver-guardian-backend-config
-              key: DB_NAME
-        - name: DB_USER
-          valueFrom:
-            configMapKeyRef:
-              name: silver-guardian-backend-config
-              key: DB_USER
-        - name: DB_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: silver-guardian-backend-secrets
-              key: DB_PASSWORD
-        - name: GEMINI_API_KEY
-          valueFrom:
-            secretKeyRef:
-              name: silver-guardian-backend-secrets
-              key: GEMINI_API_KEY
-        - name: YOUTUBE_API_KEY
-          valueFrom:
-            secretKeyRef:
-              name: silver-guardian-backend-secrets
-              key: YOUTUBE_API_KEY
